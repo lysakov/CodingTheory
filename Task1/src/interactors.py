@@ -1,4 +1,7 @@
+import srcdesc
+
 from pynput.keyboard import Listener, KeyCode
+from math import log
 
 class ProbabilityComputer(object):
 
@@ -64,3 +67,20 @@ class FirstTaskInteractor(object):
 
     def compute_probability(self, N, seq):
         return self._prob_computer.compute(N, seq)
+
+class SecondTaskInteractor(object):
+
+    def __init__(self, src):
+        self._src = src
+
+    def compute_entropy(self, eps):
+        symb_dict = srcdesc.create_symbol_dictionary_for_switch(self._src.get_description().switches[0])
+        return self._src.get_entropy(eps, len(symb_dict))
+
+    def create_code(self, coder, output):
+        code = coder.get_code()
+        
+        for word in code.items():
+            output.write("".join(word[0]) + " -> " + "".join(word[1]) + "\n")
+
+        return (log(len(code) + 1, 2) / len(list(code.items())[0][0]), len(code))

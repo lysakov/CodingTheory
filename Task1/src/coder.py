@@ -25,9 +25,14 @@ class Coder(object):
         if len(desc.switches) != 1:
             raise ValueError("Discrete source is not stationary")
 
-        self._h = self._source.get_entropy(2)
+        self._h = self._source.get_entropy(self._eps, self.__get_alphabet_len())
         if self._h > self._R:
             raise ValueError("Impossible to create code with coding speed less then entropy")
+
+    def __get_alphabet_len(self):
+        symb_dict = desc.create_symbol_dictionary_for_switch(self._source.get_description().switches[0])
+
+        return len(symb_dict)
 
     def __create_most_likely_set(self):
         symb_dict = desc.create_symbol_dictionary_for_switch(self._source.get_description().switches[0])
