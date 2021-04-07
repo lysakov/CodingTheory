@@ -23,8 +23,8 @@ if __name__ == "__main__":
         n = input()
         if n == "1":
             print("Enter precision of computation:")
-            eps = input()
-            interactor.compute_entropy(eps)
+            eps = float(input())
+            print("Entropy:", interactor.compute_entropy(eps))
         elif n == "2":
             print("Enter right bound for coding speed:")
             R = float(input())

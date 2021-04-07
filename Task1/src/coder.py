@@ -50,39 +50,8 @@ class Coder(object):
 
             for word in sequences:
                 word_prob = prod([symb_dict[i] for i in word])
-                #print("word =", word)
-                #print(f"1/{n} * I =", -log(word_prob, 2) / n)
                 if abs(-log(word_prob, 2)/n - self._h) < eps:
                     most_likely_set.append(word) 
                     set_prob += word_prob
 
-            #print(f"{n}: {1 - set_prob}")
-
         return most_likely_set
-
-    """
-    def __create_most_likely_set_for_binary_src(self):
-        prob = desc.create_symbol_dictionary_for_switch(self._source.get_description().switches[0])
-        zero, one = list(prob.keys())
-        if prob[zero] < prob[one]:
-            zero, one = one, zero
-
-        eps = (self._R - self._h) / log(prob[zero] / prob[one], 2)
-        most_likely_set = []
-        set_prob = 0
-        n = 1
-
-        while 1 - set_prob > self._eps:
-            most_likely_set.clear()
-            n += 1
-            set_prob = 0
-
-            for i in range(2**n):
-                word_str = ("{0:0" + str(n) + "b}").format(i)
-                if abs(word_str.count(one)/n - prob[one]) < eps:
-                    word = [j for j in word_str]
-                    most_likely_set.append(tuple(word))
-                    set_prob += prod([prob[j] for j in word])
-
-        return most_likely_set
-        """
