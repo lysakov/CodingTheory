@@ -22,7 +22,7 @@ struct CodeWord
     friend std::ostream& operator<<(std::ostream& str, const CodeWord &word)
     {
         for (int i = 0; i <= word.size / 8; ++i) {
-            for (int j = 0; j <= ((i == word.size / 8) ? (word.size % 8) : 7); ++j) {
+            for (int j = 0; j < word.size % 8; ++j) {
                 str << (word.data[i] & (1 << j)? 1 : 0);
             }
         }
@@ -35,12 +35,14 @@ struct CodeWord
 struct WordDesc
 {
 
-    uint8_t word;
-    size_t freq;
+    uint8_t word = 0;
+    size_t freq = 0;
     std::shared_ptr<WordDesc> first = nullptr;
     std::shared_ptr<WordDesc> second = nullptr;
     CodeWord code;
 
+    WordDesc() {}
+    
     WordDesc(uint8_t word, size_t freq) : word(word), freq(freq){}
 
     WordDesc(uint8_t word, size_t freq, std::shared_ptr<WordDesc> first, 
@@ -60,11 +62,11 @@ struct WordDesc
 
 };
 
-class Coder
+class CodeGenerator
 {
 
 public:
-    Coder(std::vector<WordDesc> &words): words(words) {}
+    CodeGenerator(std::vector<WordDesc> &words): words(words) {}
     std::shared_ptr<CodeWord> createCode();
 
 private:

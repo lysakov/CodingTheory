@@ -20,9 +20,9 @@ set(SOURCE_DIR
 src)
 
 set(SOURCE_FILES
-${SOURCE_DIR}/archiever.cpp
+${SOURCE_DIR}/CodeGenerator.cpp
 ${SOURCE_DIR}/main.cpp
-${SOURCE_DIR}/coder.cpp)
+${SOURCE_DIR}/Coder.cpp)
 
 
 include_directories(${INCLUDE_DIR})
