@@ -12,7 +12,7 @@ class Coder
     
 public:
     Coder(std::istream &input): input(&input) {}
-    void zip(std::ostream &output);
+    void encode(std::ostream &output);
 
 private:
     enum {

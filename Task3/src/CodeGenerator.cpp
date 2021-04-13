@@ -45,8 +45,6 @@ void CodeGenerator::computeCodeWord(WordDesc& word, CodeWord* codeTable)
         word.code.addNextBit(bit);
     };
 
-    std::cout << word.code << " - " << word.code.size << "\n";
-
     if (word.first) {
         changeCode(*word.first, word.code, 1);
         computeCodeWord(*word.first, codeTable);

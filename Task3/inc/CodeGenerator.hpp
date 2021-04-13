@@ -21,10 +21,19 @@ struct CodeWord
 
     friend std::ostream& operator<<(std::ostream& str, const CodeWord &word)
     {
-        for (int i = 0; i <= word.size / 8; ++i) {
-            for (int j = 0; j < word.size % 8; ++j) {
+
+        int fullBytes = word.size / 8;
+        int bits = word.size % 8;
+
+        for (int i = 0; i < fullBytes; ++i) {
+            for (int j = 0; j < 8; ++j) {
                 str << (word.data[i] & (1 << j)? 1 : 0);
             }
+            str << ' ';
+        }
+
+        for (int i = 0; i < bits; ++i) {
+                str << (word.data[fullBytes] & (1 << i)? 1 : 0);
         }
 
         return str;

@@ -22,7 +22,9 @@ src)
 set(SOURCE_FILES
 ${SOURCE_DIR}/CodeGenerator.cpp
 ${SOURCE_DIR}/main.cpp
-${SOURCE_DIR}/Coder.cpp)
+${SOURCE_DIR}/Coder.cpp
+${SOURCE_DIR}/Decoder.cpp
+${SOURCE_DIR}/DecodingTable.cpp)
 
 
 include_directories(${INCLUDE_DIR})

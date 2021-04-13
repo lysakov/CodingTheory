@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <iostream>
 
-void Coder::zip(std::ostream &output)
+void Coder::encode(std::ostream &output)
 {
 
     auto res = collectBytesStatistic();
