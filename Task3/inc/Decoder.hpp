@@ -31,19 +31,20 @@ private:
     {
 
         int offset = 8 - curBit;
-        word.data[0] |= bufferInp[curByte] >> curBit;
+        uint8_t mask = 0xFF >> curBit;
+        word.data[0] |= (bufferInp[curByte] >> curBit) & mask;
         word.data[0] |= bufferInp[curByte + 1] << offset;
-        word.data[0] &= 0xFF >> (n < 8 ? 8 - n : 0);
+        word.data[0] &= (0xFF >> (n < 8 ? 8 - n : 0));
 
         int i = 1;
         int r = 0;
         while ((r = n - (i << 3)) > 0) {
-            word.data[i] |= bufferInp[curByte + i] >> curBit;
+            word.data[i] |= (bufferInp[curByte + i] >> curBit) & mask;
             word.data[i] |= bufferInp[curByte + i + 1] << offset;
             ++i;
         }
 
-        word.data[i] |= bufferInp[curByte + i] >> (offset < r ? curBit : 8 - r);
+        word.data[i] |= (bufferInp[curByte + i] >> (offset < r ? curBit : 8 - r)) & mask;
         word.data[i] |= bufferInp[curByte + i + 1] << (8 - r + offset);
         word.data[i] &= 0xFF >> (8 - r);
         word.size = n;

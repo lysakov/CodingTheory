@@ -1,39 +1,21 @@
 #include <iostream>
-#include <sstream>
-#include "Coder.hpp"
-#include "Decoder.hpp"
-#include "CodeGenerator.hpp"
+#include <exception>
+#include "Controller.hpp"
 
-int main()
+int main(int argc, char **argv)
 {
 
-    //std::ifstream input;
-    //input.open("resources/file.txt", std::ios::binary | std::ios::in);
-    //std::ofstream output;
-    //output.open("resources/output.txt");
-    //std::stringstream str;
-    //str << "euweouew[por3029902idpw;ll;llmekcmouewoux";
-    //Coder archiever = Coder(input);
-    //archiever.encode(output);
-    std::ifstream input;
-    input.open("resources/output.txt");
-
-    std::ofstream output;
-    output.open("resources/output1.txt");
-
-    Decoder decoder(input);
-    decoder.decode(output);
-
-    /*std::vector<WordDesc> v;
-    for (int i = 0; i < 256; ++i) {
-        v.push_back(WordDesc(i, i*i));
+    try {
+        if (argc < 3) {
+            throw std::invalid_argument("Not enought arguments for launch");
+        }
+        
+        Controller controller;
+        controller.launch(argv[1], argv[2]);
     }
-    CodeGenerator coder(v);
-    auto arr = coder.createCode();
-
-    for (int i = 0; i < 256; ++i) {
-        std::cout << (int)i << " - " << arr.get()[i] << "\n";
-    }*/
+    catch (const std::exception& e) {
+        std::cerr << e.what() << std::endl;
+    }
 
     return 0;
 

@@ -1,5 +1,5 @@
-#ifndef CODER
-#define CODER
+#ifndef CODE_GENERATOR
+#define CODE_GENERATOR
 
 #include <cstdint>
 #include <cstddef>
@@ -17,6 +17,25 @@ struct CodeWord
     {
         data[size / 8] |= bit << (size % 8);
         ++size;
+    }
+
+    inline void concat(const CodeWord& codeWord)
+    {
+
+        int curByte = this->size / 8;
+        int curBit = this->size % 8;
+
+        int offset = 8 - curBit;
+        this->data[curByte] &= 0xFF >> offset;
+        this->data[curByte] |= codeWord.data[0] << curBit;
+        int i = 1;
+        while (codeWord.size - offset - (i << 3) > 0) {
+            this->data[curByte + i] = (codeWord.data[i - 1] >> offset) | (codeWord.data[i] << curBit);
+            ++i;
+        }
+        this->data[curByte + i] = codeWord.data[i - 1] >> offset;
+        this->size += codeWord.size;
+
     }
 
     friend std::ostream& operator<<(std::ostream& str, const CodeWord &word)

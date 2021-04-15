@@ -1,7 +1,7 @@
 #include "Coder.hpp"
 
 #include <algorithm>
-#include <iostream>
+#include <cstring>
 
 void Coder::encode(std::ostream &output)
 {
@@ -12,25 +12,24 @@ void Coder::encode(std::ostream &output)
     auto codeTablrPtr = codeTable.get();
     unsigned long bytesRead = 0;
 
-    for (int i = 0; i < 256; ++i) {
-        std::cout << i << " - " << codeTablrPtr[i] << " - " << codeTablrPtr[i].size << '\n';
-    }
-
     serializeCodingTable(output, codeTablrPtr);
 
-    int size = 0;
+    uint64_t size = 0;
     do {
         input->read(bufferInp, INP_BUFFER_LEN);
         bytesRead = input->gcount();
 
-        for (int i = 0; i < INP_BUFFER_LEN; ++i) {
-            CodeWord &word = codeTablrPtr[static_cast<int>(bufferInp[i])];
+        for (size_t i = 0; i < bytesRead; ++i) {
+            CodeWord &word = codeTablrPtr[static_cast<uint8_t>(bufferInp[i])];
             writeToOutpBuffer(size / 8, size % 8, word);
             size += word.size;
             
-            if (size/8 > INP_BUFFER_LEN && size/8 <= OUTP_BUFFER_LEN && size%8 == 0) {
-                output.write(reinterpret_cast<char*>(bufferOutp), size/8);
-                size = 0;
+            if (size / 8 > INP_BUFFER_LEN) {
+                output.write(reinterpret_cast<char*>(bufferOutp), size / 8);
+                uint8_t unfilledByte = bufferOutp[size / 8];
+                std::memset(bufferOutp, 0, OUTP_BUFFER_LEN);
+                bufferOutp[0] = unfilledByte;
+                size %= 8;
             }
         } 
     } while (bytesRead != 0);
@@ -39,7 +38,7 @@ void Coder::encode(std::ostream &output)
     CodeWord zeroPadding;
     zeroPadding.size = paddingLen;
     writeToOutpBuffer(size / 8, size % 8, zeroPadding);
-    size += paddingLen + 8;
+    size += paddingLen;
     output.write(reinterpret_cast<char*>(bufferOutp), size/8);
     output.write(&paddingLen, 1);
 

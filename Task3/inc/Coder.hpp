@@ -1,5 +1,5 @@
-#ifndef ARCHIEVER
-#define ARCHIEVER
+#ifndef CODER
+#define CODER
 
 #include <fstream>
 #include <vector>
@@ -27,7 +27,7 @@ private:
     std::shared_ptr<std::vector<WordDesc>> collectBytesStatistic();
     void serializeCodingTable(std::ostream& output, const CodeWord* codingTable);
 
-    inline void writeToOutpBuffer(int curByte, int curBit, const CodeWord& word) 
+    inline void writeToOutpBuffer(uint curByte, uint curBit, const CodeWord& word) 
     {
 
         int offset = 8 - curBit;
@@ -38,7 +38,7 @@ private:
             bufferOutp[curByte + i] = (word.data[i - 1] >> offset) | (word.data[i] << curBit);
             ++i;
         }
-        bufferOutp[curByte + i] = word.data[i - 1] >> offset; 
+        bufferOutp[curByte + i] = (word.data[i - 1] >> offset) | (word.data[i] << curBit); 
         
     }
 

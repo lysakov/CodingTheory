@@ -2,40 +2,47 @@
 
 #include <cstring>
 #include <vector>
-#include <cmath>
-#include <iostream>
-
-/* TODO: Improve error with 000 and decode padding */
 
 void Decoder::decode(std::ostream &output)
 {
 
     auto table = deserializeCodingTable();
-    for (auto x : table) {
-        std::cout << x.code << '\n';
-    }
     DecodingTable decodingTable(table);
 
     int outputPos = 0;
     int minLen = decodingTable.getMinCodeWordLen();
+    int bytesInBuf = 0;
     int bytesRead = 0;
     int pos = 0;
+    int offset = 0;
 
     do {
 
-        input->read(bufferInp + pos / 8, INP_BUFFER_LEN - pos / 8);
+        input->read(bufferInp + offset, INP_BUFFER_LEN - offset);
         bytesRead = input->gcount();
+        bytesInBuf = bytesRead + offset;
+        pos %= 8;
 
-        while (!((pos / 8 < INP_BUFFER_LEN) && (pos / 8 > OUTP_BUFFER_LEN) && (pos % 8 == 0)) && (pos / 8 < bytesRead)) {
+        int finalBitPos = INP_BUFFER_LEN * 8;
+        if (bytesInBuf < INP_BUFFER_LEN) {
+            uint8_t paddedBitsNum = bufferInp[bytesInBuf - 1];
+            finalBitPos = (bytesInBuf - 1) * 8 - paddedBitsNum;
+        }
+
+        while (pos < finalBitPos && pos < 8 * OUTP_BUFFER_LEN) {
+
             int len = minLen;
             uint8_t word = 0;
+            CodeWord codeWord;
+
             while (len != 0) {
-                CodeWord codeWord;
-                //std::memset(codeWord.data, 0, 32);
-                readBits(pos / 8, pos % 8, len, codeWord);
+                CodeWord tmp;
+                readBits(pos / 8, pos % 8, len, tmp);
+                codeWord.concat(tmp);
                 pos += len;
                 word = decodingTable.decode(codeWord, len);
             }
+
             bufferOutp[outputPos] = word;
             ++outputPos;
 
@@ -43,10 +50,17 @@ void Decoder::decode(std::ostream &output)
                 output.write(reinterpret_cast<char*>(bufferOutp), OUTP_BUFFER_LEN);
                 outputPos = 0;
             }
+
         }
 
-        std::memcpy(bufferInp, bufferInp + pos / 8, INP_BUFFER_LEN - pos / 8);
-        pos = 8 * (INP_BUFFER_LEN - pos / 8);
+        offset = bytesInBuf - pos / 8;
+        char tmpBuf[INP_BUFFER_LEN - OUTP_BUFFER_LEN] = {0};
+
+        if (pos != finalBitPos) {
+            std::memcpy(tmpBuf, bufferInp + pos / 8, offset);
+            std::memset(bufferInp, 0, INP_BUFFER_LEN);
+            std::memcpy(bufferInp, tmpBuf, offset);
+        }
 
     } while (bytesRead != 0);
 

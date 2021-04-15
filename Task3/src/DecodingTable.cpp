@@ -3,7 +3,6 @@
 #include <algorithm>
 #include <exception>
 #include <set>
-#include <iostream>
 
 DecodingTable::DecodingTable(const std::vector<WordDesc>& code)
 {
@@ -52,6 +51,7 @@ void DecodingTable::initTableNode(int pos, uint8_t symb, const char *codeData,
     if (!node.initialized) {
         node.initialized = true;
         node.symb = symb;
+        node.size = size > PREFIX_LEN ? PREFIX_LEN : size;
         if (size > PREFIX_LEN) {
             node.ref = new DecodingTableNode[TABLE_LEVEL_LEN];
             initTableNode(pos + PREFIX_LEN / 8, symb, codeData + PREFIX_LEN / 8, 
@@ -61,5 +61,37 @@ void DecodingTable::initTableNode(int pos, uint8_t symb, const char *codeData,
     else {
         throw std::invalid_argument("Code is not prefix");
     }
+
+}
+
+void DecodingTable::deleteNode(DecodingTableNode *node)
+{
+
+    /*DecodingTableNode *cur = curTable;
+
+    while (cur != nullptr) {
+        DecodingTableNode *tmp = curTable;
+
+        if (cur->ref != nullptr) {
+            cur = cur->ref;
+            tmp->ref = 
+        }
+    }*/
+    
+    for (int i = 0; i < TABLE_LEVEL_LEN; ++i) {
+        if (node + i != nullptr) {
+            deleteNode(node + i);
+        }
+    }
+
+    delete[] node;
+
+}
+
+
+DecodingTable::~DecodingTable()
+{
+
+    deleteNode(table);
 
 }

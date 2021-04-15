@@ -3,7 +3,6 @@
 
 #include <vector>
 #include <cmath>
-#include <iostream>
 
 #include "CodeGenerator.hpp"
 
@@ -22,23 +21,20 @@ public:
 
         uint16_t intData = *(reinterpret_cast<const int*>(word.data));
 
-        if (!curTable[intData].initialized) {
+        if (!curTable[intData].initialized || curTable[intData].size != word.size) {
             nextWordSize = deltas[curDeltaPos];
             ++curDeltaPos;
-            //std::cout << "!\n";
             return 0;
         }
 
         if (curTable[intData].ref) {
             curTable = curTable[intData].ref;
             nextWordSize = deltas[curDeltaPos];
-            //std::cout << "!!\n";
             ++curDeltaPos;
             return 0;
         }
 
         auto &decodedWord = curTable[intData];
-        //std::cout << "!!!\n";
         curTable = table;
         curDeltaPos = 1;
         nextWordSize = 0;
@@ -49,13 +45,14 @@ public:
 
     int getMinCodeWordLen() { return deltas[0]; }
 
-    ~DecodingTable() {}
+    ~DecodingTable();
 
 private:
     struct DecodingTableNode
     {
         bool initialized = false;
         uint8_t symb = 0;
+        uint8_t size = 0;
         DecodingTableNode *ref = nullptr;
     };
 
@@ -71,6 +68,7 @@ private:
     void initDeltas(const std::vector<WordDesc>& code);
     void initTableNode(int pos, uint8_t symb, const char *codeData, 
         int size, DecodingTableNode *table);
+    void deleteNode(DecodingTableNode *node);
     
 };
 
