@@ -3,8 +3,6 @@
 #include <exception>
 #include "Archiever.hpp"
 
-#include <iostream>
-
 void Controller::launch(const std::string& flag, const std::string& inputFileName)
 {
     std::ifstream input;

@@ -67,24 +67,15 @@ void DecodingTable::initTableNode(int pos, uint8_t symb, const char *codeData,
 void DecodingTable::deleteNode(DecodingTableNode *node)
 {
 
-    /*DecodingTableNode *cur = curTable;
-
-    while (cur != nullptr) {
-        DecodingTableNode *tmp = curTable;
-
-        if (cur->ref != nullptr) {
-            cur = cur->ref;
-            tmp->ref = 
-        }
-    }*/
-    
     for (int i = 0; i < TABLE_LEVEL_LEN; ++i) {
-        if (node + i != nullptr) {
+        if ((node + i)->ref != nullptr) {
             deleteNode(node + i);
         }
     }
 
-    delete[] node;
+    if (node != curTable) {
+        delete[] node;
+    }
 
 }
 
