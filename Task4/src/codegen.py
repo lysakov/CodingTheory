@@ -11,10 +11,13 @@ class CodeGenerator(object):
         self._k = ceil(R * n)
         self._p = p
         self._matrix = self.__generate_matrix()
-        self._code, self._t, self._error_prob = self.__generate_code(self._matrix)
+        self._encode_dict, self._decode_dict, self._t, self._error_prob = self.__generate_code(self._matrix)
 
-    def get_code(self) -> dict:
-        return self._code
+    def get_decode_dict(self) -> dict:
+        return self._decode_dict
+
+    def get_encode_dict(self) -> dict:
+        return self._encode_dict
 
     def get_matrix(self) -> list:
         return self._matrix
@@ -39,25 +42,27 @@ class CodeGenerator(object):
         return matrix
 
     def __generate_code(self, matrix):
-        code_dict = {}
+        decode_dict = {}
+        encode_dict = {}
         code = []
         t = 0
         error_prob = 1
 
         for block in product([0, 1], repeat=self._k):
             code_word = binary_vec_matrix_mul(block, matrix)
-            code_dict[tuple(code_word)] = block
+            decode_dict[tuple(code_word)] = block
+            encode_dict[tuple(block)] = code_word
             code.append(code_word)
 
         error_prob -= (1 - self._p)**(self._n)
 
         for w in range(1, self._n + 1):
-            a, a_max = self.__fill_standart_location_level(w, code_dict, code)
+            a, a_max = self.__fill_standart_location_level(w, decode_dict, code)
             error_prob -= a * self._p**w * (1 - self._p)**(self._n - w) 
             if a == a_max:
                 t += 1
 
-        return code_dict, t, error_prob
+        return encode_dict, decode_dict, t, error_prob
 
     def __fill_standart_location_level(self, weight, code_dict, code):
         cnt = [0, 0]
