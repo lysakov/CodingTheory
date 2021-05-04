@@ -7,6 +7,7 @@ from math import ceil
 class CodeGenerator(object):
     
     def __init__(self, n, R, p):
+        self.__check_params(n, R, p)
         self._n = n
         self._k = ceil(R * n)
         self._p = p
@@ -27,6 +28,14 @@ class CodeGenerator(object):
 
     def get_error_prob(self) -> float:
         return self._error_prob
+
+    def __check_params(self, n, R, p):
+        if n <= 0:
+            raise ValueError("Block size should be positive value")
+        if R <= 0 or R > 1:
+            raise ValueError("Coding speed should be between 0 and 1")
+        if p < 0 or p > 1:
+            raise ValueError("Illegal value for channel error probability")
 
     def __generate_matrix(self):
         matrix = []
