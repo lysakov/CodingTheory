@@ -27,7 +27,7 @@ if __name__ == "__main__":
                 json_presenter.write(output, codegen)
             print(f"Code description can be found in {path}")
             print(f"Code improves {codegen.get_error_bound} mistakes.")
-            print(f"Probability of having mistake is {codegen.get_error_prob}.")
+            print(f"Probability of mistake appearance is {codegen.get_error_prob}.")
 
         elif n == "2":
             print("Enter path to code description:")
